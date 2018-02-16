@@ -43,6 +43,67 @@ public class GestionCommandes {
 		BufferedReader ficLecture = Files.newBufferedReader(chemin, Charset.defaultCharset());
 		return ficLecture;
 	}
+	
+	//Lit et définit dans quelle partie du fichier la lecture est rendue.
+	private void assignerTableau() throws IOException {
+
+		int listCourant = -1;
+		boolean clientVu, platVu, commandeVu,
+			fichierValide = true;
+
+		clientVu = platVu = commandeVu = false;
+
+		try {
+			String ligne = "";
+			while ((ligne = this.ficLecture.readLine()) != null) {
+				if (ligne.equals("Fin")) {
+					break;
+					
+				} else if (ligne.equals("Clients:")) {
+					
+					if (clientVu) {
+						throw new IOException("Clients: apparait plus d'une fois.");
+					}
+					
+					listCourant = 0;
+					clientVu = true;
+				
+				} else if (ligne.equals("Plats:")) {
+					
+					if (platVu) {
+						throw new IOException("Plat: apparait plus d'une fois.");
+					}
+					
+					listCourant = 1;
+					platVu = true;
+
+				} else if (ligne.equals("Commandes:")) {
+					
+					if (commandeVu) {
+						throw new IOException("Commande: apparait plus d'une fois.");
+					}
+					
+					listCourant = 2;
+					commandeVu = true;
+	
+				} else {
+					assignerLigne(listCourant, ligne);
+				}
+			}
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());	
+			fichierValide = false;
+		}
+
+		if (fichierValide) {
+			System.out.println("Bienvenue chez Barette!");
+			System.out.println("Facture:");
+			for (Client cli : clients) {
+				cli.afficher();
+			}
+		}
+	}
 
 	// Distribue l’information et effectue la vérification selon la partie du
 	// fichier.
