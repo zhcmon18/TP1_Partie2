@@ -1,0 +1,9 @@
+afficher les erreur
+
+Lorsque la variable locale __1 n'est pas vide la sortie de la facture obtenue avec la methode __2 contient un bloc afichant les élément de __1
+Le bloc débute par __ puis sur une ligne chaque tous les éléments de __1 sont affiché suivi d'une ligne vide
+Lorsque __1 est vide ce bloc n'existe pas
+
+ne pas afficher les commande de 0$
+
+si une commande retourne une valeur de 0$ cette commande n'apparaitrat pas dans la facture
