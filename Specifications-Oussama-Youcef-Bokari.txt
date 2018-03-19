@@ -1,0 +1,14 @@
+/*********1*********/
+
+public double calculTaxes(double facture)
+
+la méthode retourne un double "taxes" qui représente les taxes à payer.
+
+/*********2*********/
+
+public double calculerTotal(double facture)
+
+la méthode retourne un double "factureTotale" qui représente la factur avec le total à payer.
+
+
+
