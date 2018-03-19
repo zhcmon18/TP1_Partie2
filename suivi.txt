@@ -1,0 +1,14 @@
+"Les tâches" {
+	"Pavel" : [
+		"L'affichage de la facture au terminal",
+		"L'édition dans le fichier"
+	],
+	"Justin" : [
+		"Validation des commandes lues.",
+		"Le non affichage des factures de 0$."
+	],
+	"Youcef" : [ 
+		"L'application des taxes sur le total de la facture."
+	]
+}
+
