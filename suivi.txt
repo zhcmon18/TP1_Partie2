@@ -4,8 +4,8 @@
 		"L'édition dans le fichier"
 	],
 	"Justin" : [
-		"L'affichage de toutes les commandes incorrectes avant les factures.",
-		"Le non affichage des factures des clients avec 0$."
+		"Validation des commandes lues.",
+		"Le non affichage des factures de 0$."
 	],
 	"Youcef" : [ 
 		"L'application des taxes sur le total de la facture."
