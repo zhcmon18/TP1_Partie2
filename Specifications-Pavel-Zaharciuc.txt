@@ -1,0 +1,7 @@
+La préparation et le retour de la chaine qui représente la facture se fait avec la méthode private String sortieTerm()
+Les attributs de la classe utilisés par la méthode :
+un List qui contient les objets du type Client qui possèdent un accesseur pour récupérer la facture associée au chaque client.
+un List qui contient les commandes incorrectes (si la liste est vide, rien n’est affiché à propos les commandes erronées) 
+un int qui indique le nombre de commandes valides. Si la valeur est 0, « Aucune facture » serait affiché.
+
+La méthode private void ecrireFacture(PrintWriter ficEcriture, String facture) permet d’écrire la facture dans un fichier texte. La méthode println de l’objet ficEcriture est utilisée pour l’écriture, après laquelle l’objet sera fermé.
