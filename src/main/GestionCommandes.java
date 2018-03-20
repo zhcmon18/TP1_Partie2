@@ -18,7 +18,7 @@ public class GestionCommandes {
 	private List<String> listPlats;
 	private List<String> listCommandes;
 	private String nomFichier;
-	private Path chemin;
+	private static Path chemin;
 	BufferedReader ficLecture;
 
 	// Le constructeur.
@@ -38,7 +38,7 @@ public class GestionCommandes {
 	}
 
 	// Permet de lire le fichier texte.
-	private BufferedReader ouvrirFichier(String nomFichier) throws IOException {
+	public static BufferedReader ouvrirFichier(String nomFichier) throws IOException {
 
 		chemin = Paths.get(nomFichier).toAbsolutePath();
 		BufferedReader ficLecture = Files.newBufferedReader(chemin, Charset.defaultCharset());
