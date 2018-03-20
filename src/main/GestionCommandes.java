@@ -155,7 +155,7 @@ public class GestionCommandes {
 	}
 
 	// Vérifier la commande si elle contient le client et le plat existant.
-	private boolean commandeValide(String commande) throws IOException {
+	public boolean commandeValide(String commande) throws IOException {
 
 		if (commande.split(" ").length != 3) {
 			throw new IOException("Le fichier ne respecte pas le format demand\u00e9 !");
