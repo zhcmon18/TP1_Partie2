@@ -19,11 +19,6 @@ public class Client {
 		return nom;
 	}
 
-	/*Mutateur de l'attribut nom*/
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
 	/*Accesseur de l'attribut nom*/
 	public double getFacture() {
 		return facture;
