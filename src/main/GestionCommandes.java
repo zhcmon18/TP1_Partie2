@@ -17,6 +17,7 @@ public class GestionCommandes {
 	private List<String> listClients;
 	private List<String> listPlats;
 	private List<String> listCommandes;
+	private List<String> listCommandesIncorrecte;
 	private String nomFichier;
 	private static Path chemin;
 	BufferedReader ficLecture;
@@ -27,6 +28,7 @@ public class GestionCommandes {
 		listClients = new ArrayList<>();
 		listPlats = new ArrayList<>();
 		listCommandes = new ArrayList<>();
+		listCommandesIncorrecte = new ArrayList<>();
 		clients = new ArrayList<>();
 
 		this.nomFichier = nomFichier;
@@ -154,44 +156,86 @@ public class GestionCommandes {
 		}
 	}
 
-	// Vérifier la commande si elle contient le client et le plat existant.
-	public boolean commandeValide(String commande) throws IOException {
+	//Vérifie la commande si elle contient le client, le plat, et la quantité valides.
+		public boolean commandeValide(String commande) throws IOException {
+			String messageErreur = null;
+			
+			boolean cmdValide = true;
+			
+			if (commande.split(" ").length != 3) {
+				messageErreur = "la commande ne respecte pas le format demand\u00e9.";
+				cmdValide = false;
+			
+			} else {			
+				boolean clientValide, clientExiste, platValide, platExiste;
 
-		if (commande.split(" ").length != 3) {
-			throw new IOException("Le fichier ne respecte pas le format demand\u00e9 !");
-		}
+				clientValide = clientExiste = platValide = platExiste = false;
 
-		boolean clientValide, platValide;
+				String clientCmd = commande.split(" ")[0];
+				String platCmd = commande.split(" ")[1];
+				String quantiteCmd = commande.split(" ")[2];
+				
+				clientValide = clientCmd.matches("[a-zA-ZÀ-ÿ]+");
+				clientExiste = (listClients.contains(clientCmd));
+				platValide = platCmd.matches("[a-zA-ZÀ-ÿ_]+");
+				
+				for (String plat : listPlats) {
+					if (plat.split(" ")[0].equals(platCmd)) {
+						platExiste = true;
+						break;
+					}
+				}
+						
+				if (!clientValide) {
+					cmdValide = false;
+					messageErreur = "le format du client " + clientCmd + " n'est pas valide.";
+				
+				} else {
+					if (!clientExiste) {
+						cmdValide = false;
+						messageErreur = "le client " + clientCmd + " n'existe pas.";
+					}
+				}
 
-		clientValide = platValide = false;
+				if (!platValide) {
+					cmdValide = false;
+					messageErreur = "le format du plat " + platCmd + " n'est pas valide.";
+				
+				} else {
+					if (!platExiste) {
+						cmdValide = false;
+						messageErreur = "le plat " + platCmd + " n'existe pas.";
+					}
+				}
 
-		clientValide = (listClients.contains(commande.split(" ")[0]));
+				char[] quantite = quantiteCmd.toCharArray();
 
-		if (!clientValide) {
-			throw new IOException("Le fichier ne respecte pas le format demand\u00e9 !");
-		}
-
-		for (String plat : listPlats) {
-			if (plat.split(" ")[0].equals(commande.split(" ")[1])) {
-				platValide = true;
-				break;
+				boolean quantZero = true;
+				
+				for (char car : quantite) {
+					if (!Character.isDigit(car)) {
+						cmdValide = false;
+						messageErreur = "le format de la quantité " + quantiteCmd + " de la commande n'est pas valide.";
+						break;
+					} 
+				
+					if (car != '0') {
+						quantZero = false;
+					} 
+				}	
+					
+				if (cmdValide) {
+					if (quantZero) {
+						cmdValide = false;
+						messageErreur = "La quantité ne peut pas être zero.";
+					}
+				}
 			}
-		}
-
-		if (!platValide) {
-			throw new IOException("Le fichier ne respecte pas le format demand\\u00e9 !");
-		}
-
-		for (char car : commande.split(" ")[2].toCharArray()) {
-			if (!Character.isDigit(car)) {
-				throw new IOException("Le fichier ne respecte pas le format demand\\u00e9 !");
+			
+			if (!cmdValide) {
+				this.listCommandesIncorrecte.add(commande + " - " + messageErreur);
 			}
+			
+			return cmdValide;
 		}
-
-		if (!platValide) {
-			throw new IOException("Le fichier ne respecte pas le format demand\\u00e9 !");
-		}
-
-		return clientValide && platValide;
-	}
 }

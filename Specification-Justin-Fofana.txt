@@ -1,8 +1,8 @@
 afficher les erreur
 
-Lorsque la variable locale __1 n'est pas vide la sortie de la facture obtenue avec la methode __2 contient un bloc afichant les élément de __1
-Le bloc débute par __ puis sur une ligne chaque tous les éléments de __1 sont affiché suivi d'une ligne vide
-Lorsque __1 est vide ce bloc n'existe pas
+Lorsque la variable locale listCommandesIncorrecte n'est pas vide la sortie de la facture obtenue avec la methode sortieTerm() contient un bloc afichant les élément de listCommandesIncorrecte
+Le bloc débute par "Les commandes incorrectes:" puis sur une ligne chaque tous les éléments de listCommandesIncorrecte sont affichés suivi d'une ligne vide
+Lorsque listCommandesIncorrecte est vide ce bloc n'existe pas
 
 ne pas afficher les commande de 0$
 
