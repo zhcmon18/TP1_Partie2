@@ -37,8 +37,8 @@ public class Client {
 	}
 	
 	/*Affiche la facture*/
-	public void afficher() {
-		System.out.println(this.getNom() + " " + String.format("%.2f$", this.getFacture()));
+	public String afficher() {
+		return this.getNom() + " " + String.format("%.2f$", this.getFacture());
 	}
 
 }

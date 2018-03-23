@@ -101,7 +101,7 @@ public class GestionCommandes {
 			System.out.println("Bienvenue chez Barette!");
 			System.out.println("Facture:");
 			for (Client cli : clients) {
-				cli.afficher();
+				System.out.println(cli.afficher());
 			}
 		}
 	}
