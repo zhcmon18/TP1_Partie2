@@ -35,17 +35,17 @@ public class GestionCommandes {
 		listCommandesIncorrecte = new ArrayList<>();
 		clients = new ArrayList<>();
 		
-		boolean ficSucces = true;
+		boolean ficReussi = true;
 		
 		try {
 			ficLecture = ouvrirFichier(nomFichier);
 		
 		} catch (IOException exc) {
 			System.out.println("Impossible d'ouvrire le ficher: " + nomFichier + " n'existe pas.");
-			ficSucces = false;
+			ficReussi = false;
 		}
 		
-		if (ficSucces) {			
+		if (ficReussi) {			
 			
 			try {
 				assignerTableau();
@@ -288,8 +288,8 @@ public class GestionCommandes {
 	//Permet de préparer et retourner un fichier pour écriture.
 	private PrintWriter preparerFicEcrire(String nomFichier) throws FileNotFoundException {
 		String chemin = Paths.get(nomFichier).toAbsolutePath().toString();
-		File f = new File(chemin);
-		PrintWriter ficEcrire = new PrintWriter(f);
+		File file = new File(chemin);
+		PrintWriter ficEcrire = new PrintWriter(file);
 		return ficEcrire;
 	}
 
