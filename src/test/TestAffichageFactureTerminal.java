@@ -17,7 +17,7 @@ public class TestAffichageFactureTerminal {
 
 	@Before
 	public void AvantChaqueTest() throws Exception {
-		gestionCmd = new GestionCommandes("test.txt");
+		gestionCmd = new GestionCommandes("test2.txt");
 	}
 
 	@After
@@ -50,7 +50,8 @@ public class TestAffichageFactureTerminal {
 				"Célinee Frites 2 - le client Célinee n'existe pas.\r\n" + 
 				"\r\n"+
 				"Facture:\r\n" +
-				"Céline 18,11$";
+				"Céline 18,11$\r\n";
+		System.out.println(factureRetournee);
 		assertEquals(factureRetournee, factureAttendue );
 		
 	}
