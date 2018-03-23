@@ -239,6 +239,32 @@ public class GestionCommandes {
 			return cmdValide;
 		}
 		
+		//Méthode de calcul de taxes.
+		public double calculTaxes(double facture) {
+			final double TPS = 0.05;
+			final double TVQ = 0.09975;
+
+			double taxes = 0;
+
+			if (facture == 0) {
+				taxes = 0;
+
+			} else {
+				taxes = (facture * (TPS + TVQ));
+			}
+			return taxes;
+		}
+
+		//Méthode qui calcule le total de la facture aprés l'ajout des taxes.
+		public double calculerTotal(double facture) {
+			double factureTotale = 0;
+			double taxes = calculTaxes(facture);
+
+			factureTotale = facture + taxes;
+
+			return factureTotale;
+		}
+		
 		public String verifierFacturesZero(Client client) {
 			String facture = "";
 			
