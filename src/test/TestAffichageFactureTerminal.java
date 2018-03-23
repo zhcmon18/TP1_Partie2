@@ -7,13 +7,10 @@ import org.junit.Before;
 import org.junit.Test;
 import main.GestionCommandes;
 
-import java.util.regex.Pattern;
 
 public class TestAffichageFactureTerminal {
 
 	GestionCommandes gestionCmd;
-	String pattern = "";
-	Pattern r = Pattern.compile(pattern);
 
 	@Before
 	public void AvantChaqueTest() throws Exception {
@@ -25,18 +22,13 @@ public class TestAffichageFactureTerminal {
 		gestionCmd = null;
 	}
 	
-	
-	
-	
-
-//La chaine est vide ou pas.
+	//La chaine est vide ou pas.
 	@Test
 	public void testSortieTerm() {
 		
 		assertNotNull(gestionCmd.sortieTerm());
 		
 	}
-	
 	
 	@Test
 	public void testFactureValide() {
@@ -54,6 +46,5 @@ public class TestAffichageFactureTerminal {
 		System.out.println(factureRetournee);
 		assertEquals(factureRetournee, factureAttendue );
 		
-	}
-	
+	}	
 }
