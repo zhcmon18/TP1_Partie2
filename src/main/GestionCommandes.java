@@ -238,4 +238,13 @@ public class GestionCommandes {
 			
 			return cmdValide;
 		}
+		
+		public String verifierFacturesZero(Client client) {
+			String facture = "";
+			
+			if (client.getFacture() != 0) {
+				facture = client.afficher() + "\r\n";
+			}
+			return facture;
+		}
 }
