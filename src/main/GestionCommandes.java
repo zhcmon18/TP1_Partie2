@@ -246,12 +246,8 @@ public class GestionCommandes {
 
 			double taxes = 0;
 
-			if (facture == 0) {
-				taxes = 0;
-
-			} else {
-				taxes = (facture * (TPS + TVQ));
-			}
+			taxes = (facture * (TPS + TVQ));
+			
 			return taxes;
 		}
 
