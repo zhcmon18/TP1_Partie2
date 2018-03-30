@@ -25,7 +25,7 @@ public class EcouteurFenetre implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == fenetre.getLireFic()) {
+		if (e.getSource() == fenetre.getTabBoutons()[0]) {
 
 			if (choixFichier.showOpenDialog(fenetre) == JFileChooser.APPROVE_OPTION) {
 
@@ -37,9 +37,15 @@ public class EcouteurFenetre implements ActionListener {
 					gestionCmd = new GestionCommandes(nomFichier);
 					gestionCmd.lireDonnees();
 					
-					fenetre.getChampTexteFic().setText(gestionCmd.getDonnees());
+					fenetre.getTabChampsTexte()[0].setText(gestionCmd.getDonnees());
 					
-					fenetre.setTitle(nomFichier + " - " + TITRE); 
+					fenetre.setTitle(nomFichier + " - " + TITRE);
+					fenetre.getTabChampsTexte()[1].setText("");
+					fenetre.getTabBoutons()[1].setEnabled(true);
+					
+					if (fenetre.getTabBoutons()[2].isEnabled()) {
+						fenetre.getTabBoutons()[2].setEnabled(false);
+					}
 					
 				} catch (Exception ex) {
 
@@ -47,13 +53,12 @@ public class EcouteurFenetre implements ActionListener {
 							JOptionPane.WARNING_MESSAGE);
 				}
 			}
-		} else if (e.getSource() == fenetre.getProduireFact()) {
+		} else if (e.getSource() == fenetre.getTabBoutons()[1]) {
 			
-			if (gestionCmd != null) {
-				
-				fenetre.getChampTexteFact().setText(gestionCmd.sortieTerm());
-			}
-		} else if (e.getSource() == fenetre.getSauvegarder()) {
+			fenetre.getTabChampsTexte()[1].setText(gestionCmd.sortieTerm());
+			fenetre.getTabBoutons()[2].setEnabled(true);
+			
+		} else if (e.getSource() == fenetre.getTabBoutons()[2]) {
 			
 			try {
 				String nomFic = gestionCmd.sauvegarderFicFacture();
