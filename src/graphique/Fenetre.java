@@ -1,6 +1,7 @@
 package graphique;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
@@ -40,6 +41,8 @@ public class Fenetre extends JFrame{
 		
 		champTexteFic = new JTextArea(20, 20);
 		champTexteFic.setFont(champTexteFic.getFont().deriveFont(15f));
+		champTexteFic.setEditable(false);
+		champTexteFic.setBackground(Color.WHITE);
 		
 		JScrollPane scrollFic = new JScrollPane(champTexteFic);
 		
@@ -61,6 +64,8 @@ public class Fenetre extends JFrame{
 		
 		champTexteFact = new JTextArea(20, 40);
 		champTexteFact.setFont(champTexteFact.getFont().deriveFont(15f));
+		champTexteFact.setEditable(false);
+		champTexteFact.setBackground(Color.WHITE);
 		
 		JScrollPane scrollFact = new JScrollPane(champTexteFact);
 		

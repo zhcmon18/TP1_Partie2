@@ -3,6 +3,7 @@ package graphique;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -36,7 +37,7 @@ public class EcouteurFenetre implements ActionListener {
 					gestionCmd = new GestionCommandes(nomFichier);
 					gestionCmd.lireDonnees();
 					
-					fenetre.getChampTexteFic().setText(gestionCmd.getDonnees);
+					fenetre.getChampTexteFic().setText(gestionCmd.getDonnees());
 					
 					fenetre.setTitle(nomFichier + " - " + TITRE); 
 					
@@ -53,7 +54,16 @@ public class EcouteurFenetre implements ActionListener {
 				fenetre.getChampTexteFact().setText(gestionCmd.sortieTerm());
 			}
 		} else if (e.getSource() == fenetre.getSauvegarder()) {
-			gestionCmd.sauvegarderFicFacture();
+			
+			try {
+				String nomFic = gestionCmd.sauvegarderFicFacture();
+				
+				JOptionPane.showMessageDialog(fenetre, "La facture a été sauvegardée dans le fichier\n" + nomFic, 
+						"Sauvegarder", JOptionPane.INFORMATION_MESSAGE);
+			
+			} catch (FileNotFoundException exc) {
+				System.out.println("Le fichier est introuvable.");
+			}
 		}
 	} 
 }
