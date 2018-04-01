@@ -125,6 +125,4 @@ public class Fenetre extends JFrame{
 	public JButton[] getTabBoutons() {
 		return tabBoutons;
 	}
-
-	
 }

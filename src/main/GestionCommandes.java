@@ -36,15 +36,14 @@ public class GestionCommandes {
 		listPlats = new ArrayList<>();
 		listCommandes = new ArrayList<>();
 		listCommandesIncorrecte = new ArrayList<>();
-		clients = new ArrayList<>();
-		
+		clients = new ArrayList<>();		
 	}
 
 	/*Lit et définit dans quelle partie du fichier la lecture est rendue.*/
 	private void assignerTableau() throws IOException  {
 
 		int listCourant = -1;
-		boolean clientVu, platVu, commandeVu = true;
+		boolean clientVu, platVu, commandeVu, format = true;
 
 		clientVu = platVu = commandeVu = false;
 
@@ -90,15 +89,20 @@ public class GestionCommandes {
 				commandeVu = true;
 
 			} else {
-				assignerLigne(listCourant, ligne);
+				
+				format = assignerLigne(listCourant, ligne);	
 			}
+		}
+		if (!format) {
+			throw new IOException();
 		}
 	}
 
 	/*Distribue l’information et effectue la vérification selon la partie du
 	  fichier.*/
-	private void assignerLigne(int list, String ligne) throws IOException {
+	private boolean assignerLigne(int list, String ligne) throws IOException {
 
+		boolean formatDonnes = true;
 		nbCmdValides = 0;
 		
 		switch (list) {
@@ -145,8 +149,10 @@ public class GestionCommandes {
 			}
 			break;
 		default:
-			System.out.println("L’indice de la liste inattendu.");
+			formatDonnes = false;
 		}
+		
+		return formatDonnes;
 	}
 
 	/*Vérifie la commande si elle contient le client, le plat, et la quantité valides.*/
@@ -318,7 +324,7 @@ public class GestionCommandes {
 	}
 	
 	/*Lire les donnees dans un fichier*/
-	public void lireDonnees() {
+	public void lireDonnees() throws IOException {
 
 		boolean ficReussi = true;
 
@@ -326,18 +332,11 @@ public class GestionCommandes {
 			ficLecture = ouvrirFichier(nomFichier);
 
 		} catch (IOException exc) {
-			System.out.println("Impossible d'ouvrire le ficher: " + nomFichier + " n'existe pas.");
 			ficReussi = false;
 		}
 
 		if (ficReussi) {
-
-			try {
-				assignerTableau();
-
-			} catch (IOException exc) {
-				System.out.println("Un erreur de lecture est survenu dans le fichier " + nomFichier + ".");
-			}
+			assignerTableau();
 		}
 	}
 	

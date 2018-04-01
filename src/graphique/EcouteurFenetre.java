@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import main.GestionCommandes;
 
@@ -15,12 +16,15 @@ public class EcouteurFenetre implements ActionListener {
 	private final String TITRE = "Chez Barette";
 	
 	private JFileChooser choixFichier = new JFileChooser(System.getProperty("user.dir"));
+	private FileNameExtensionFilter filter = new FileNameExtensionFilter("Fichiers texte", "txt", "texte");
 	private Fenetre fenetre;
 	private GestionCommandes gestionCmd;
 
 	public EcouteurFenetre(Fenetre fenetre) {
 		super();
 		this.fenetre = fenetre;
+		choixFichier.setFileFilter(filter);
+		choixFichier.setAcceptAllFileFilterUsed(false);
 	}
 
 	@Override
@@ -32,31 +36,32 @@ public class EcouteurFenetre implements ActionListener {
 				File f = choixFichier.getSelectedFile();
 				
 				String nomFichier = f.getName();
+				fenetre.setTitle(nomFichier + " - " + TITRE);
 				
 				try {
 					gestionCmd = new GestionCommandes(nomFichier);
 					gestionCmd.lireDonnees();
 					
-					fenetre.getTabChampsTexte()[0].setText(gestionCmd.getDonnees());
-					
-					fenetre.setTitle(nomFichier + " - " + TITRE);
-					fenetre.getTabChampsTexte()[1].setText("");
-					fenetre.getTabBoutons()[1].setEnabled(true);
-					
-					if (fenetre.getTabBoutons()[2].isEnabled()) {
-						fenetre.getTabBoutons()[2].setEnabled(false);
-					}
+					gestionChampsTexte();
+
+					gestionBoutons(true, 1);
+					gestionBoutons(false, 2);
 					
 				} catch (Exception ex) {
-
-					JOptionPane.showMessageDialog(fenetre, "Impossible d'ouvrir le ficher.", "Ouvrir",
+					gestionChampsTexte();
+					
+					JOptionPane.showMessageDialog(fenetre, "Le format des données invalide.", "Ouvrir",
 							JOptionPane.WARNING_MESSAGE);
+					
+					gestionBoutons(false, 1);
+					gestionBoutons(false, 2);
 				}
 			}
+		
 		} else if (e.getSource() == fenetre.getTabBoutons()[1]) {
 			
 			fenetre.getTabChampsTexte()[1].setText(gestionCmd.sortieTerm());
-			fenetre.getTabBoutons()[2].setEnabled(true);
+			gestionBoutons(true, 2);
 			
 		} else if (e.getSource() == fenetre.getTabBoutons()[2]) {
 			
@@ -71,4 +76,13 @@ public class EcouteurFenetre implements ActionListener {
 			}
 		}
 	} 
+
+	private void gestionBoutons(boolean etat, int indice){
+		fenetre.getTabBoutons()[indice].setEnabled(etat);
+	}
+
+	private void gestionChampsTexte(){
+		fenetre.getTabChampsTexte()[0].setText(gestionCmd.getDonnees());
+		fenetre.getTabChampsTexte()[1].setText("");
+	}
 }
