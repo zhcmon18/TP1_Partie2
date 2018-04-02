@@ -259,6 +259,21 @@ public class GestionCommandes {
 		
 		return cmdValide;
 	}
+	
+	//Méthode qui vérifie si les données existent et retourne un boolean.
+	private <E> boolean donneeExiste(List<E> liste, String donnee, int indice) {
+		
+		boolean existe = false;
+		
+		for (E chaine : liste) {
+			if (chaine.toString().split(" ")[indice].equals(donnee)) {
+				existe = true;
+				break;
+			}
+		}
+		
+		return existe;
+	}
 
 	/*Méthode de calcul de taxes.*/
 	public double calculTaxes(double facture) {
