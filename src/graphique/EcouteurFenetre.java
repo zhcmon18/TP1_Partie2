@@ -48,9 +48,12 @@ public class EcouteurFenetre implements ActionListener {
 					gestionBoutons(false, 2);
 					
 				} catch (Exception ex) {
+					System.out.println(ex.getMessage());
 					gestionChampsTexte();
 					
-					JOptionPane.showMessageDialog(fenetre, "Le format des données invalide.", "Ouvrir",
+					String message = gestionCmd.messageErreur;
+					
+					JOptionPane.showMessageDialog(fenetre, "Le format des données invalide.\n" + message, "Ouvrir",
 							JOptionPane.WARNING_MESSAGE);
 					
 					gestionBoutons(false, 1);

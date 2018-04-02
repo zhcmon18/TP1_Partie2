@@ -36,4 +36,9 @@ public class Client {
 		return this.getNom() + " " + String.format("%.2f$", this.getFacture());
 	}
 
+	@Override
+	public String toString() {
+		return nom;
+	}
+
 }

@@ -25,7 +25,7 @@ public class Table {
 	public void calculerFacture() {
 		montantFacture = 0;
 		for (String commande : listCommandes) {
-			montantFacture += 1;
+			montantFacture += gestionnaire.montantCommande(commande);
 		}
 	}
 	
@@ -33,6 +33,11 @@ public class Table {
 		String facture = "";
 		
 		return facture;
+	}
+	
+	@Override
+	public String toString() {
+		return id;
 	}
 	
 }

@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class GestionCommandes {
-
+	
 	/*Les attributs.*/
 	private List<Client> clients;
 	private List<String> listClients;
@@ -28,6 +28,8 @@ public class GestionCommandes {
 	private PrintWriter ficEcriture;
 	private String nomFichier, donnees;
 	private int nbCmdValides;
+	
+	public String messageErreur = "";
 
 	/*Le constructeur.*/
 	public GestionCommandes(String nomFichier) throws Exception {
@@ -53,6 +55,7 @@ public class GestionCommandes {
 		
 		String ligne = "";
 		while ((ligne = this.ficLecture.readLine()) != null) {
+
 			
 			if (ligne == "Fin") {
 				donnees += ligne;
@@ -66,7 +69,8 @@ public class GestionCommandes {
 			} else if (ligne.equals("Clients:")) {
 
 				if (clientVu) {
-					throw new IOException("Clients: apparait plus d'une fois.");
+					format = false;
+					messageErreur += "\nClients: apparait plus d'une fois.";
 				}
 
 				listCourant = 0;
@@ -75,7 +79,8 @@ public class GestionCommandes {
 			} else if (ligne.equals("Plats:")) {
 
 				if (platVu) {
-					throw new IOException("Plat: apparait plus d'une fois.");
+					format = false;
+					messageErreur += "\nPlat: apparait plus d'une fois.";
 				}
 
 				listCourant = 1;
@@ -84,28 +89,29 @@ public class GestionCommandes {
 			} else if (ligne.equals("Tables:")) {
 
 				if (tableVu) {
-					throw new IOException("Tables: apparait plus d'une fois.");
+					format = false;
+					messageErreur += "\nTables: apparait plus d'une fois.";
 				}
 
 				listCourant = 2;
-				platVu = true;
+				tableVu = true;
 
 			} else if (ligne.equals("Commandes:")) {
 
 				if (commandeVu) {
-					throw new IOException("Commande: apparait plus d'une fois.");
+					format = false;
+					messageErreur += "\nCommande: apparait plus d'une fois.";
 				}
 
 				listCourant = 3;
 				commandeVu = true;
 
 			} else {
-				
 				format = assignerLigne(listCourant, ligne);	
 			}
 		}
 		if (!format) {
-			throw new IOException();
+			throw new IOException(messageErreur);
 		} else {
 			for (Table table : listTables) {
 				table.calculerFacture();
@@ -178,77 +184,81 @@ public class GestionCommandes {
 	
 
 	/*Vérifie la commande si elle contient le client, le plat, et la quantité valides.*/
-	public boolean commandeValide(String commande) throws IOException {
-		String messageErreur = null;
-		
+	public boolean commandeValide(String commande) {
 		boolean cmdValide = true;
 		
 		if (commande.split(" ").length != 4) {
-			messageErreur = "la commande ne respecte pas le format demand\u00e9.";
+			messageErreur += "\nla commande - "+commande+" - ne respecte pas le format demand\u00e9.";
 			cmdValide = false;
 		
 		} else {			
-			boolean clientValide, clientExiste, platValide, platExiste;
+			boolean clientValide, clientExiste, platValide, platExiste, tableValide, tableExiste;
 
-			clientValide = clientExiste = platValide = platExiste = false;
-
+			clientValide = clientExiste = platValide = platExiste = tableValide = tableExiste = true;
+			
 			String clientCmd = commande.split(" ")[0];
 			String platCmd = commande.split(" ")[1];
 			String quantiteCmd = commande.split(" ")[2];
+			String tableCmd = commande.split(" ")[3];
 			
 			clientValide = clientCmd.matches("[a-zA-ZÀ-ÿ]+");
-			clientExiste = (listClients.contains(clientCmd));
-			platValide = platCmd.matches("[a-zA-ZÀ-ÿ_]+");
+			clientExiste = donneeExiste(listClients, clientCmd, 0);
 			
-			for (String plat : listPlats) {
-				if (plat.split(" ")[0].equals(platCmd)) {
-					platExiste = true;
-					break;
-				}
+			platValide = platCmd.matches("[a-zA-ZÀ-ÿ_]+");
+			platExiste = donneeExiste(listPlats, platCmd, 0);
+			
+			if(!isInt(tableCmd)){
+				messageErreur += "\nle format de la table " + tableCmd + " de la commande n'est pas valide.";
+				tableValide = false;
 			}
-					
+			tableExiste = donneeExiste(listTables, tableCmd, 0);
+			
 			if (!clientValide) {
 				cmdValide = false;
-				messageErreur = "le format du client " + clientCmd + " n'est pas valide.";
+				messageErreur += "\nle format du client " + clientCmd + " n'est pas valide.";
 			
 			} else {
 				if (!clientExiste) {
 					cmdValide = false;
-					messageErreur = "le client " + clientCmd + " n'existe pas.";
+					messageErreur += "\nle client " + clientCmd + " n'existe pas.";
 				}
 			}
 
 			if (!platValide) {
 				cmdValide = false;
-				messageErreur = "le format du plat " + platCmd + " n'est pas valide.";
+				messageErreur += "\nle format du plat " + platCmd + " n'est pas valide.";
 			
 			} else {
 				if (!platExiste) {
 					cmdValide = false;
-					messageErreur = "le plat " + platCmd + " n'existe pas.";
+					messageErreur += "\nle plat " + platCmd + " n'existe pas.";
 				}
 			}
 
-			char[] quantite = quantiteCmd.toCharArray();
-
-			boolean quantZero = true;
+			if (!tableValide) {
+				cmdValide = false;
+				messageErreur += "\nle format de la table " + tableCmd + " n'est pas valide.";
 			
-			for (char car : quantite) {
-				if (!Character.isDigit(car)) {
+			} else {
+				if (!tableExiste) {
 					cmdValide = false;
-					messageErreur = "le format de la quantité " + quantiteCmd + " de la commande n'est pas valide.";
-					break;
-				} 
-			
-				if (car != '0') {
-					quantZero = false;
-				} 
-			}	
+					messageErreur += "\nla table " + tableCmd + " n'existe pas.";
+				}
+			}
+			boolean quantZero = false;
+			if(!isInt(quantiteCmd)){
+				messageErreur += "\nle format de la quantité " + quantiteCmd + " de la commande n'est pas valide.";
+				cmdValide = false;
+			} else {
+				if (Integer.parseInt(quantiteCmd) == 0) {
+					quantZero = true;
+				}
+			}
 				
 			if (cmdValide) {
 				if (quantZero) {
 					cmdValide = false;
-					messageErreur = "La quantité ne peut pas être zero.";
+					messageErreur += "\nLa quantité ne peut pas être zero.";
 				}
 			}
 		}
@@ -265,8 +275,8 @@ public class GestionCommandes {
 		
 		boolean existe = false;
 		
-		for (E chaine : liste) {
-			if (chaine.toString().split(" ")[indice].equals(donnee)) {
+		for (E element : liste) {
+			if (element.toString().split(" ")[indice].equals(donnee)) {
 				existe = true;
 				break;
 			}
@@ -381,6 +391,8 @@ public class GestionCommandes {
 
 		} catch (IOException exc) {
 			ficReussi = false;
+			System.out.println(exc.getMessage());
+			
 		}
 
 		if (ficReussi) {
