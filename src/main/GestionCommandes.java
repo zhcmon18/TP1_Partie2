@@ -274,7 +274,18 @@ public class GestionCommandes {
 		
 		return existe;
 	}
-
+	
+	// Méthode qui vérifie si la chaine reçus est un entier.
+	private boolean isInt(String chaine) {
+		boolean value = true;
+		for (char car : chaine.toCharArray()) {
+			if (!Character.isDigit(car)) {
+				value = false;
+				break;
+			} 
+		}
+		return value;
+	}
 	/*Méthode de calcul de taxes.*/
 	public double calculTaxes(double facture) {
 		final double TPS = 0.05;
