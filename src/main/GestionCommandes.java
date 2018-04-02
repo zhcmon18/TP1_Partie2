@@ -358,13 +358,22 @@ public class GestionCommandes {
 		} else {
 			facture += TITRE_FACT;
 
-			for (Client client : clients) {
-				facture += verifierFacturesZero(client);
+			for (Table table : listTables) {
+				facture += verifierFacturesZero(table);
 			}
 		}
 		return facture;
 	}
 
+	public String verifierFacturesZero(Table table) {
+		String facture = "";
+		
+		if (table.getMontantFacture() != 0) {
+			facture = table.afficher() + "\r\n";
+		}
+		return facture;
+	}
+	
 	public String verifierFacturesZero(Client client) {
 		String facture = "";
 		
@@ -418,6 +427,15 @@ public class GestionCommandes {
 
 	public String getDonnees() {
 		return donnees;
+	}
+	
+	public String formaterLigneCommande (String commande) {
+		
+		String clientCmd = commande.split(" ")[0];
+		String platCmd = commande.split(" ")[1];
+		String quantiteCmd = commande.split(" ")[2];
+		
+		return clientCmd + ", " + platCmd + ", qte " + quantiteCmd + " = " + String.format("%.2f$", montantCommande(commande));
 	}
 	
 	public double montantCommande (String commande) {

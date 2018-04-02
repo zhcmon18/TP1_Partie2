@@ -17,7 +17,11 @@ public class Table {
 		this.gestionnaire = gestionnaire;
 		listCommandes = new ArrayList<>();
 	}
-	
+
+	public double getMontantFacture() {
+		return montantFacture;
+	}
+
 	public void ajouterCommande(String commande) {
 		listCommandes.add(commande);
 	}
@@ -31,6 +35,18 @@ public class Table {
 	
 	public String sortieFacture() {
 		String facture = "";
+		
+		return facture;
+	}
+	
+	public String afficher() {
+		String facture = "\r\nTable #" + id + " :\tnombre de commandes : " + listCommandes.size() + "\r\n";
+		
+		for (String commande : listCommandes) {
+			facture += "\t" + gestionnaire.formaterLigneCommande(commande) + "\r\n";
+		}
+		
+		facture += "\tTotal = " + String.format("%.2f$", montantFacture);
 		
 		return facture;
 	}
