@@ -151,24 +151,7 @@ public class GestionCommandes {
 					}
 				}
 				
-				// ------
-				
-				double prixPlat = 0;
-				int nbPlat = Integer.parseInt(ligne.split(" ")[2]);
-				
-				for (String plat : listPlats) {
-					if (plat.split(" ")[0].equals(ligne.split(" ")[1])) {
-						prixPlat = Double.parseDouble(plat.split(" ")[1]);
-					}
-				}
-
-				double prixBrut = prixPlat * nbPlat;
-
-				double total = calculerTotal(prixBrut);
-				
-				// ------
-				
-				client.setFacture(client.getFacture() + total);
+				client.setFacture(client.getFacture() + montantCommande(ligne));
 				
 				Table table = null;
 				
@@ -204,7 +187,7 @@ public class GestionCommandes {
 			messageErreur = "la commande ne respecte pas le format demand\u00e9.";
 			cmdValide = false;
 		
-		} else {	
+		} else {			
 			boolean clientValide, clientExiste, platValide, platExiste;
 
 			clientValide = clientExiste = platValide = platExiste = false;
@@ -397,6 +380,25 @@ public class GestionCommandes {
 
 	public String getDonnees() {
 		return donnees;
+	}
+	
+	public double montantCommande (String commande) {
+		double montant;
+		
+		double prixPlat = 0;
+		int nbPlat = Integer.parseInt(commande.split(" ")[2]);
+		
+		for (String plat : listPlats) {
+			if (plat.split(" ")[0].equals(commande.split(" ")[1])) {
+				prixPlat = Double.parseDouble(plat.split(" ")[1]);
+			}
+		}
+
+		double prixBrut = prixPlat * nbPlat;
+
+		montant = calculerTotal(prixBrut);
+		
+		return montant;
 	}
 	
 }
