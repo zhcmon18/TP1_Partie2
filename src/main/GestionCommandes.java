@@ -21,6 +21,7 @@ public class GestionCommandes {
 	private List<Client> clients;
 	private List<String> listClients;
 	private List<String> listPlats;
+	private List<Table> listTables;
 	private List<String> listCommandes;
 	private List<String> listCommandesIncorrecte;
 	private BufferedReader ficLecture;
@@ -34,6 +35,7 @@ public class GestionCommandes {
 		
 		listClients = new ArrayList<>();
 		listPlats = new ArrayList<>();
+		listTables = new ArrayList<>();
 		listCommandes = new ArrayList<>();
 		listCommandesIncorrecte = new ArrayList<>();
 		clients = new ArrayList<>();		
@@ -43,9 +45,9 @@ public class GestionCommandes {
 	private void assignerTableau() throws IOException  {
 
 		int listCourant = -1;
-		boolean clientVu, platVu, commandeVu, format = true;
+		boolean clientVu, platVu, tableVu, commandeVu, format = true;
 
-		clientVu = platVu = commandeVu = false;
+		clientVu = platVu = tableVu = commandeVu = false;
 
 		donnees = "";
 		
@@ -79,13 +81,22 @@ public class GestionCommandes {
 				listCourant = 1;
 				platVu = true;
 
+			} else if (ligne.equals("Tables:")) {
+
+				if (tableVu) {
+					throw new IOException("Tables: apparait plus d'une fois.");
+				}
+
+				listCourant = 2;
+				platVu = true;
+
 			} else if (ligne.equals("Commandes:")) {
 
 				if (commandeVu) {
 					throw new IOException("Commande: apparait plus d'une fois.");
 				}
 
-				listCourant = 2;
+				listCourant = 3;
 				commandeVu = true;
 
 			} else {
@@ -95,6 +106,10 @@ public class GestionCommandes {
 		}
 		if (!format) {
 			throw new IOException();
+		} else {
+			for (Table table : listTables) {
+				table.calculerFacture();
+			}
 		}
 	}
 
@@ -120,21 +135,27 @@ public class GestionCommandes {
 			listPlats.add(ligne);
 			break;
 		case 2:
+			listTables.add(new Table(ligne, this));
+			break;
+		case 3:
 
 			if (commandeValide(ligne)) {
 				listCommandes.add(ligne);
 				nbCmdValides++;
 
 				Client client = null;
-				double prixPlat = 0;
-				int nbPlat = Integer.parseInt(ligne.split(" ")[2]);
-
+				
 				for (Client c : clients) {
 					if (c.getNom().equals(ligne.split(" ")[0])) {
 						client = c;
 					}
 				}
-
+				
+				// ------
+				
+				double prixPlat = 0;
+				int nbPlat = Integer.parseInt(ligne.split(" ")[2]);
+				
 				for (String plat : listPlats) {
 					if (plat.split(" ")[0].equals(ligne.split(" ")[1])) {
 						prixPlat = Double.parseDouble(plat.split(" ")[1]);
@@ -144,8 +165,24 @@ public class GestionCommandes {
 				double prixBrut = prixPlat * nbPlat;
 
 				double total = calculerTotal(prixBrut);
-
+				
+				// ------
+				
 				client.setFacture(client.getFacture() + total);
+				
+				Table table = null;
+				
+				for (Table t : listTables) {
+					if (t.toString().equals(ligne.split(" ")[3])) {
+						table = t;
+						break;
+					}
+				}
+				
+				table.ajouterCommande(ligne);
+
+			} else {
+				formatDonnes = false;
 			}
 			break;
 		default:
@@ -154,6 +191,8 @@ public class GestionCommandes {
 		
 		return formatDonnes;
 	}
+	
+	
 
 	/*Vérifie la commande si elle contient le client, le plat, et la quantité valides.*/
 	public boolean commandeValide(String commande) throws IOException {
@@ -161,11 +200,11 @@ public class GestionCommandes {
 		
 		boolean cmdValide = true;
 		
-		if (commande.split(" ").length != 3) {
+		if (commande.split(" ").length != 4) {
 			messageErreur = "la commande ne respecte pas le format demand\u00e9.";
 			cmdValide = false;
 		
-		} else {			
+		} else {	
 			boolean clientValide, clientExiste, platValide, platExiste;
 
 			clientValide = clientExiste = platValide = platExiste = false;
@@ -359,4 +398,5 @@ public class GestionCommandes {
 	public String getDonnees() {
 		return donnees;
 	}
+	
 }
