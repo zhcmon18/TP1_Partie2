@@ -8,6 +8,13 @@ import org.junit.Test;
 
 import main.GestionCommandes;
 
+
+/**
+ * @author Youcef
+ * 
+ * Feuille de test désormait désuet - La facture est calculée differement.
+ *
+ */
 public class TestGestionDuCalculDesTaxes {
 
 	GestionCommandes gestionCmd;
