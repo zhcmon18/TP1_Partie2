@@ -311,8 +311,14 @@ public class GestionCommandes {
 	/*Méthode qui calcule le total de la facture aprés l'ajout des taxes.*/
 	public double calculerTotal(double facture) {
 		double factureTotale = 0;
-		double taxes = calculTaxes(facture);
+		double taxes;
 
+		if(facture > 100) {
+			facture *= 1.15;
+		}
+		
+		taxes = calculTaxes(facture);
+		
 		factureTotale = facture + taxes;
 
 		return factureTotale;
@@ -400,8 +406,6 @@ public class GestionCommandes {
 
 		} catch (IOException exc) {
 			ficReussi = false;
-			System.out.println(exc.getMessage());
-			
 		}
 
 		if (ficReussi) {

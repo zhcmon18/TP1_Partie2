@@ -48,7 +48,6 @@ public class EcouteurFenetre implements ActionListener {
 					gestionBoutons(false, 2);
 					
 				} catch (Exception ex) {
-					System.out.println(ex.getMessage());
 					gestionChampsTexte();
 					
 					String message = gestionCmd.messageErreur;
@@ -75,7 +74,9 @@ public class EcouteurFenetre implements ActionListener {
 						"Sauvegarder", JOptionPane.INFORMATION_MESSAGE);
 			
 			} catch (FileNotFoundException exc) {
-				System.out.println("Le fichier est introuvable.");
+				JOptionPane.showMessageDialog(fenetre, "Le fichier est introuvable.", 
+						"Sauvegarder", JOptionPane.INFORMATION_MESSAGE);
+
 			}
 		}
 	} 
