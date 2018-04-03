@@ -42,6 +42,7 @@ public class Fenetre extends JFrame{
 		super("Chez Barette");
 		setSize(850, 550);
 		setMinimumSize(new Dimension(getWidth(), getHeight()));
+		setResizable(false);
 		
 		ecouteur = new EcouteurFenetre(this);
 		

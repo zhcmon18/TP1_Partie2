@@ -35,27 +35,43 @@ public class EcouteurFenetre implements ActionListener {
 
 				File f = choixFichier.getSelectedFile();
 				
-				String nomFichier = f.getName();
-				fenetre.setTitle(nomFichier + " - " + TITRE);
-				
-				try {
-					gestionCmd = new GestionCommandes(nomFichier);
-					gestionCmd.lireDonnees();
+				if (f.exists()) {
 					
-					gestionChampsTexte();
+					String nomFichier = f.getName();
+					fenetre.setTitle(nomFichier + " - " + TITRE);
+					
+					try {
+						gestionCmd = new GestionCommandes(nomFichier);
+						gestionCmd.lireDonnees();
+						
+						gestionChampsTexte();
 
-					gestionBoutons(true, 1);
-					gestionBoutons(false, 2);
+						gestionBoutons(true, 1);
+						gestionBoutons(false, 2);
+						
+					} catch (Exception ex) {
+						gestionChampsTexte();
+						
+						String message = gestionCmd.messageErreur;
+						
+						JOptionPane.showMessageDialog(fenetre, "Le format des données invalide.\n" + message, "Ouvrir",
+								JOptionPane.WARNING_MESSAGE);
+						
+						gestionBoutons(false, 1);
+						gestionBoutons(false, 2);
+						
+					}
 					
-				} catch (Exception ex) {
-					gestionChampsTexte();
-					
-					JOptionPane.showMessageDialog(fenetre, "Le format des données invalide.", "Ouvrir",
+				} else {
+					JOptionPane.showMessageDialog(fenetre, "Le fichier " + f.getName() + " n'existe pas.", "Ouvrir",
 							JOptionPane.WARNING_MESSAGE);
-					
 					gestionBoutons(false, 1);
 					gestionBoutons(false, 2);
+					fenetre.getTabChampsTexte()[0].setText("");
+					fenetre.getTabChampsTexte()[1].setText("");
+					
 				}
+
 			}
 		
 		} else if (e.getSource() == fenetre.getTabBoutons()[1]) {
@@ -72,7 +88,9 @@ public class EcouteurFenetre implements ActionListener {
 						"Sauvegarder", JOptionPane.INFORMATION_MESSAGE);
 			
 			} catch (FileNotFoundException exc) {
-				System.out.println("Le fichier est introuvable.");
+				JOptionPane.showMessageDialog(fenetre, "Le fichier est introuvable.", 
+						"Sauvegarder", JOptionPane.INFORMATION_MESSAGE);
+
 			}
 		}
 	} 

@@ -16,17 +16,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class GestionCommandes {
-
+	
 	/*Les attributs.*/
 	private List<Client> clients;
 	private List<String> listClients;
 	private List<String> listPlats;
+	private List<Table> listTables;
 	private List<String> listCommandes;
 	private List<String> listCommandesIncorrecte;
 	private BufferedReader ficLecture;
 	private PrintWriter ficEcriture;
 	private String nomFichier, donnees;
 	private int nbCmdValides;
+	
+	public String messageErreur = "";
 
 	/*Le constructeur.*/
 	public GestionCommandes(String nomFichier) throws Exception {
@@ -34,6 +37,7 @@ public class GestionCommandes {
 		
 		listClients = new ArrayList<>();
 		listPlats = new ArrayList<>();
+		listTables = new ArrayList<>();
 		listCommandes = new ArrayList<>();
 		listCommandesIncorrecte = new ArrayList<>();
 		clients = new ArrayList<>();		
@@ -43,14 +47,15 @@ public class GestionCommandes {
 	private void assignerTableau() throws IOException  {
 
 		int listCourant = -1;
-		boolean clientVu, platVu, commandeVu, format = true;
+		boolean clientVu, platVu, tableVu, commandeVu, format = true;
 
-		clientVu = platVu = commandeVu = false;
+		clientVu = platVu = tableVu = commandeVu = false;
 
 		donnees = "";
 		
 		String ligne = "";
 		while ((ligne = this.ficLecture.readLine()) != null) {
+
 			
 			if (ligne == "Fin") {
 				donnees += ligne;
@@ -64,7 +69,8 @@ public class GestionCommandes {
 			} else if (ligne.equals("Clients:")) {
 
 				if (clientVu) {
-					throw new IOException("Clients: apparait plus d'une fois.");
+					format = false;
+					messageErreur += "\nClients: apparait plus d'une fois.";
 				}
 
 				listCourant = 0;
@@ -73,28 +79,43 @@ public class GestionCommandes {
 			} else if (ligne.equals("Plats:")) {
 
 				if (platVu) {
-					throw new IOException("Plat: apparait plus d'une fois.");
+					format = false;
+					messageErreur += "\nPlat: apparait plus d'une fois.";
 				}
 
 				listCourant = 1;
 				platVu = true;
 
-			} else if (ligne.equals("Commandes:")) {
+			} else if (ligne.equals("Tables:")) {
 
-				if (commandeVu) {
-					throw new IOException("Commande: apparait plus d'une fois.");
+				if (tableVu) {
+					format = false;
+					messageErreur += "\nTables: apparait plus d'une fois.";
 				}
 
 				listCourant = 2;
+				tableVu = true;
+
+			} else if (ligne.equals("Commandes:")) {
+
+				if (commandeVu) {
+					format = false;
+					messageErreur += "\nCommande: apparait plus d'une fois.";
+				}
+
+				listCourant = 3;
 				commandeVu = true;
 
 			} else {
-				
 				format = assignerLigne(listCourant, ligne);	
 			}
 		}
 		if (!format) {
-			throw new IOException();
+			throw new IOException(messageErreur);
+		} else {
+			for (Table table : listTables) {
+				table.calculerFacture();
+			}
 		}
 	}
 
@@ -120,32 +141,37 @@ public class GestionCommandes {
 			listPlats.add(ligne);
 			break;
 		case 2:
+			listTables.add(new Table(ligne, this));
+			break;
+		case 3:
 
 			if (commandeValide(ligne)) {
 				listCommandes.add(ligne);
 				nbCmdValides++;
 
 				Client client = null;
-				double prixPlat = 0;
-				int nbPlat = Integer.parseInt(ligne.split(" ")[2]);
-
+				
 				for (Client c : clients) {
 					if (c.getNom().equals(ligne.split(" ")[0])) {
 						client = c;
 					}
 				}
-
-				for (String plat : listPlats) {
-					if (plat.split(" ")[0].equals(ligne.split(" ")[1])) {
-						prixPlat = Double.parseDouble(plat.split(" ")[1]);
+				
+				client.setFacture(client.getFacture() + montantCommande(ligne));
+				
+				Table table = null;
+				
+				for (Table t : listTables) {
+					if (t.toString().equals(ligne.split(" ")[3])) {
+						table = t;
+						break;
 					}
 				}
+				
+				table.ajouterCommande(ligne);
 
-				double prixBrut = prixPlat * nbPlat;
-
-				double total = calculerTotal(prixBrut);
-
-				client.setFacture(client.getFacture() + total);
+			} else {
+				formatDonnes = false;
 			}
 			break;
 		default:
@@ -154,79 +180,85 @@ public class GestionCommandes {
 		
 		return formatDonnes;
 	}
+	
+	
 
 	/*Vérifie la commande si elle contient le client, le plat, et la quantité valides.*/
-	public boolean commandeValide(String commande) throws IOException {
-		String messageErreur = null;
-		
+	public boolean commandeValide(String commande) {
 		boolean cmdValide = true;
 		
-		if (commande.split(" ").length != 3) {
-			messageErreur = "la commande ne respecte pas le format demand\u00e9.";
+		if (commande.split(" ").length != 4) {
+			messageErreur += "\nla commande - "+commande+" - ne respecte pas le format demand\u00e9.";
 			cmdValide = false;
 		
 		} else {			
-			boolean clientValide, clientExiste, platValide, platExiste;
+			boolean clientValide, clientExiste, platValide, platExiste, tableValide, tableExiste;
 
-			clientValide = clientExiste = platValide = platExiste = false;
-
+			clientValide = clientExiste = platValide = platExiste = tableValide = tableExiste = true;
+			
 			String clientCmd = commande.split(" ")[0];
 			String platCmd = commande.split(" ")[1];
 			String quantiteCmd = commande.split(" ")[2];
+			String tableCmd = commande.split(" ")[3];
 			
 			clientValide = clientCmd.matches("[a-zA-ZÀ-ÿ]+");
-			clientExiste = (listClients.contains(clientCmd));
-			platValide = platCmd.matches("[a-zA-ZÀ-ÿ_]+");
+			clientExiste = donneeExiste(listClients, clientCmd, 0);
 			
-			for (String plat : listPlats) {
-				if (plat.split(" ")[0].equals(platCmd)) {
-					platExiste = true;
-					break;
-				}
+			platValide = platCmd.matches("[a-zA-ZÀ-ÿ_]+");
+			platExiste = donneeExiste(listPlats, platCmd, 0);
+			
+			if(!isInt(tableCmd)){
+				messageErreur += "\nle format de la table " + tableCmd + " de la commande n'est pas valide.";
+				tableValide = false;
 			}
-					
+			tableExiste = donneeExiste(listTables, tableCmd, 0);
+			
 			if (!clientValide) {
 				cmdValide = false;
-				messageErreur = "le format du client " + clientCmd + " n'est pas valide.";
+				messageErreur += "\nle format du client " + clientCmd + " n'est pas valide.";
 			
 			} else {
 				if (!clientExiste) {
 					cmdValide = false;
-					messageErreur = "le client " + clientCmd + " n'existe pas.";
+					messageErreur += "\nle client " + clientCmd + " n'existe pas.";
 				}
 			}
 
 			if (!platValide) {
 				cmdValide = false;
-				messageErreur = "le format du plat " + platCmd + " n'est pas valide.";
+				messageErreur += "\nle format du plat " + platCmd + " n'est pas valide.";
 			
 			} else {
 				if (!platExiste) {
 					cmdValide = false;
-					messageErreur = "le plat " + platCmd + " n'existe pas.";
+					messageErreur += "\nle plat " + platCmd + " n'existe pas.";
 				}
 			}
 
-			char[] quantite = quantiteCmd.toCharArray();
-
-			boolean quantZero = true;
+			if (!tableValide) {
+				cmdValide = false;
+				messageErreur += "\nle format de la table " + tableCmd + " n'est pas valide.";
 			
-			for (char car : quantite) {
-				if (!Character.isDigit(car)) {
+			} else {
+				if (!tableExiste) {
 					cmdValide = false;
-					messageErreur = "le format de la quantité " + quantiteCmd + " de la commande n'est pas valide.";
-					break;
-				} 
-			
-				if (car != '0') {
-					quantZero = false;
-				} 
-			}	
+					messageErreur += "\nla table " + tableCmd + " n'existe pas.";
+				}
+			}
+			boolean quantZero = false;
+			if(!isInt(quantiteCmd)){
+				messageErreur += "\nle format de la quantité " + quantiteCmd + " de la commande n'est pas valide.";
+				cmdValide = false;
+			} else {
+				if (Integer.parseInt(quantiteCmd) == 0) {
+					quantZero = true;
+				}
+			}
 				
 			if (cmdValide) {
 				if (quantZero) {
 					cmdValide = false;
-					messageErreur = "La quantité ne peut pas être zero.";
+					messageErreur += "\nLa quantité ne peut pas être zero.";
 				}
 			}
 		}
@@ -237,7 +269,33 @@ public class GestionCommandes {
 		
 		return cmdValide;
 	}
-
+	
+	//Méthode qui vérifie si les données existent et retourne un boolean.
+	private <E> boolean donneeExiste(List<E> liste, String donnee, int indice) {
+		
+		boolean existe = false;
+		
+		for (E element : liste) {
+			if (element.toString().split(" ")[indice].equals(donnee)) {
+				existe = true;
+				break;
+			}
+		}
+		
+		return existe;
+	}
+	
+	// Méthode qui vérifie si la chaine reçus est un entier.
+	private boolean isInt(String chaine) {
+		boolean value = true;
+		for (char car : chaine.toCharArray()) {
+			if (!Character.isDigit(car)) {
+				value = false;
+				break;
+			} 
+		}
+		return value;
+	}
 	/*Méthode de calcul de taxes.*/
 	public double calculTaxes(double facture) {
 		final double TPS = 0.05;
@@ -253,8 +311,14 @@ public class GestionCommandes {
 	/*Méthode qui calcule le total de la facture aprés l'ajout des taxes.*/
 	public double calculerTotal(double facture) {
 		double factureTotale = 0;
-		double taxes = calculTaxes(facture);
+		double taxes;
 
+		if(facture > 100) {
+			facture *= 1.15;
+		}
+		
+		taxes = calculTaxes(facture);
+		
 		factureTotale = facture + taxes;
 
 		return factureTotale;
@@ -300,13 +364,22 @@ public class GestionCommandes {
 		} else {
 			facture += TITRE_FACT;
 
-			for (Client client : clients) {
-				facture += verifierFacturesZero(client);
+			for (Table table : listTables) {
+				facture += verifierFacturesZero(table);
 			}
 		}
 		return facture;
 	}
 
+	public String verifierFacturesZero(Table table) {
+		String facture = "";
+		
+		if (table.getMontantFacture() != 0) {
+			facture = table.afficher() + "\r\n";
+		}
+		return facture;
+	}
+	
 	public String verifierFacturesZero(Client client) {
 		String facture = "";
 		
@@ -359,4 +432,33 @@ public class GestionCommandes {
 	public String getDonnees() {
 		return donnees;
 	}
+	
+	public String formaterLigneCommande (String commande) {
+		
+		String clientCmd = commande.split(" ")[0];
+		String platCmd = commande.split(" ")[1];
+		String quantiteCmd = commande.split(" ")[2];
+		
+		return clientCmd + ", " + platCmd + ", qte " + quantiteCmd + " = " + String.format("%.2f$", montantCommande(commande));
+	}
+	
+	public double montantCommande (String commande) {
+		double montant;
+		
+		double prixPlat = 0;
+		int nbPlat = Integer.parseInt(commande.split(" ")[2]);
+		
+		for (String plat : listPlats) {
+			if (plat.split(" ")[0].equals(commande.split(" ")[1])) {
+				prixPlat = Double.parseDouble(plat.split(" ")[1]);
+			}
+		}
+
+		double prixBrut = prixPlat * nbPlat;
+
+		montant = calculerTotal(prixBrut);
+		
+		return montant;
+	}
+	
 }

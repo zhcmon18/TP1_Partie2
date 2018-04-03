@@ -7,7 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 import main.GestionCommandes;
 
-
+/**
+ * @author Youcef
+ * 
+ * Feuille de test désormait désuet - La facture a un format différent.
+ *
+ */
 public class TestAffichageFactureTerminal {
 
 	GestionCommandes gestionCmd;

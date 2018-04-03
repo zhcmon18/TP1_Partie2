@@ -5,7 +5,12 @@ import java.io.IOException;
 import org.junit.Test;
 
 import main.GestionCommandes;
-
+/**
+ * @author Youcef
+ * 
+ * Feuille de test désormait désuet - Le fichier test111.txt n'existe plus.
+ *
+ */
 public class TestOuvrirFicException {
 	
 	@Test(expected = IOException.class)
