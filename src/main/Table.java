@@ -31,6 +31,10 @@ public class Table {
 		for (String commande : listCommandes) {
 			montantFacture += gestionnaire.montantCommande(commande);
 		}
+	
+		if (montantFacture > 100) {
+			montantFacture *= 1.15;
+		}
 	}
 	
 	public String sortieFacture() {

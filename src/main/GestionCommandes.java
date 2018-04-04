@@ -313,10 +313,6 @@ public class GestionCommandes {
 		double factureTotale = 0;
 		double taxes;
 
-		if(facture > 100) {
-			facture *= 1.15;
-		}
-		
 		taxes = calculTaxes(facture);
 		
 		factureTotale = facture + taxes;

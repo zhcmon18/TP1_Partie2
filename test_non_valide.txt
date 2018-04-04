@@ -6,8 +6,12 @@ Plats:
 Poutine 10.5
 Frites 2.5
 Repas_Poulet 15.75
+Tables:
+1
+2
+3
 Commandes:
 Roger1 Poutine 1
-Célinee Frites 2
-Céline Repas_Poulet 1
+Célinee Frites 2 2
+Céline Repas2_Poulet 1 2
 Fin
